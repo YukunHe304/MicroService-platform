@@ -1,0 +1,33 @@
+name: daily-commit
+
+on:
+  schedule:
+    - cron: '5 6 * * *'   # 每天 06:05 UTC 运行（可改；尽量固定到每天一次）
+  workflow_dispatch:        # 允许手动触发一次
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Append timestamp
+        run: |
+          echo "$(date -u) keepalive" >> keepalive.txt
+
+      - name: Set author as your account
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          # 如果你在 Settings→Emails 里看到的是带数字ID的 noreply 地址，
+          # 也可以把上面这行改成你的 noreply 邮箱，确保是“已验证邮箱”。
+
+      - name: Commit & push
+        run: |
+          git add keepalive.txt
+          git commit -m "chore: daily keepalive" || echo "Nothing to commit"
+          git push origin HEAD:main
