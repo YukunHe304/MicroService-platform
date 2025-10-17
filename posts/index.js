@@ -21,7 +21,7 @@ app.post("/posts", async (req, res) => {
     const id = randomBytes(4).toString("hex");
     posts[id] = {id, title};
 
-    await axios.post('http://localhost:4005/events', {type : "PostCreated", data : {id, title}})
+    await axios.post('http://eventbus-srv:4005/events', {type : "PostCreated", data : {id, title}})
 
     res.status(201).json(posts[id]);
 })
@@ -34,5 +34,6 @@ app.post("/events", (req, res) => {
 
 
 app.listen(4000, ()=> {
+    console.log("It's a new version 555");
     console.log("Listening port:4000");
 })
